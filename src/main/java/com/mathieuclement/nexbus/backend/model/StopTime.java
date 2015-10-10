@@ -3,7 +3,6 @@ package com.mathieuclement.nexbus.backend.model;
 import com.mathieuclement.nexbus.backend.model.id.StopTimeId;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.IdClass;
 import java.time.Instant;
 

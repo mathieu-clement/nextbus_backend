@@ -2,7 +2,6 @@ package com.mathieuclement.nexbus.backend.gtfs;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 
 public class GtfsDate {

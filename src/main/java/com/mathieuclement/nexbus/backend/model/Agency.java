@@ -1,10 +1,7 @@
 package com.mathieuclement.nexbus.backend.model;
 
-import org.springframework.util.Assert;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
 import java.util.TimeZone;
 
 @Entity

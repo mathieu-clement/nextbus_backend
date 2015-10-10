@@ -7,8 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import java.time.LocalDate;
 
-// TODO Might not need to be an entity and persisted
-
 @Entity
 @IdClass(CalendarDateId.class)
 public class CalendarDate implements Comparable<CalendarDate> {
