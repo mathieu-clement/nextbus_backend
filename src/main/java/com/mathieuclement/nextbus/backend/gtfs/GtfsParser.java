@@ -1,6 +1,6 @@
-package com.mathieuclement.nexbus.backend.gtfs;
+package com.mathieuclement.nextbus.backend.gtfs;
 
-import com.mathieuclement.nexbus.backend.model.*;
+import com.mathieuclement.nextbus.backend.model.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;

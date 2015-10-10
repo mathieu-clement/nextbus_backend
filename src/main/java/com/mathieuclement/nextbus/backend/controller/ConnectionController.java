@@ -1,6 +1,6 @@
-package com.mathieuclement.nexbus.backend.controller;
+package com.mathieuclement.nextbus.backend.controller;
 
-import com.mathieuclement.nexbus.backend.model.*;
+import com.mathieuclement.nextbus.backend.model.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,7 +18,7 @@ public class ConnectionController {
             @RequestParam(value = "latitude") float latitude,
             @RequestParam(value = "longitude") float longitude) {
         List<Connection> nextConnections = new LinkedList<>();
-        Agency agency = new Agency(123, "CFF", "Europe/Zurich");
+        Agency agency = new Agency(123L, "CFF", "Europe/Zurich");
         nextConnections.add(new Connection(
                 Instant.now(),
                 agency,

@@ -1,7 +1,6 @@
-package com.mathieuclement.nexbus.backend.serializer;
+package com.mathieuclement.nextbus.backend.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 

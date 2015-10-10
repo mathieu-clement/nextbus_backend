@@ -1,20 +1,21 @@
-package com.mathieuclement.nexbus.backend.model;
+package com.mathieuclement.nextbus.backend.model;
 
-import com.mathieuclement.nexbus.backend.model.id.CalendarDateId;
+import com.mathieuclement.nextbus.backend.model.id.CalendarDateId;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @IdClass(CalendarDateId.class)
+@Table(name = "CALENDAR_DATE")
 public class CalendarDate implements Comparable<CalendarDate> {
 
     @Id
+    @Column(name = "SERVICE_ID")
     private String serviceId;
 
     @Id
+    @Column(name = "LOCAL_DATE")
     private LocalDate date;
 
     /**

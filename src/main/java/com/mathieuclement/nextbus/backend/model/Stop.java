@@ -1,5 +1,6 @@
-package com.mathieuclement.nexbus.backend.model;
+package com.mathieuclement.nextbus.backend.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -9,14 +10,17 @@ public class Stop implements Comparable<Stop> {
     @Id
     private String id;
 
+    @Column(name = "STOP_CODE")
     private String stopCode;
 
+    @Column(name = "STOP_NAME")
     private String stopName;
 
     private float latitude;
 
     private float longitude;
 
+    @Column(name = "PLATFORM_CODE")
     private String platformCode; // not present in GTFS reference
 
     protected Stop () {}

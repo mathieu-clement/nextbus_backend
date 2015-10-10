@@ -1,7 +1,7 @@
-package com.mathieuclement.nexbus.backend.model;
+package com.mathieuclement.nextbus.backend.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.mathieuclement.nexbus.backend.serializer.InstantToDateTimeSerializer;
+import com.mathieuclement.nextbus.backend.serializer.InstantToDateTimeSerializer;
 
 import java.time.Instant;
 

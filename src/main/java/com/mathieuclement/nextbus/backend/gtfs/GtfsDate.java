@@ -1,4 +1,4 @@
-package com.mathieuclement.nexbus.backend.gtfs;
+package com.mathieuclement.nextbus.backend.gtfs;
 
 import java.time.Instant;
 import java.time.LocalDate;

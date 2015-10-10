@@ -1,22 +1,22 @@
-package com.mathieuclement.nexbus.backend.gtfs;
+package com.mathieuclement.nextbus.backend.gtfs;
 
-import com.mathieuclement.nexbus.backend.model.*;
-import org.junit.Assert;
+import com.mathieuclement.nextbus.backend.model.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class GtfsParserTest {
 

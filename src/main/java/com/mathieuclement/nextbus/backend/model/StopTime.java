@@ -1,17 +1,28 @@
-package com.mathieuclement.nexbus.backend.model;
+package com.mathieuclement.nextbus.backend.model;
 
-import com.mathieuclement.nexbus.backend.model.id.StopTimeId;
+import com.mathieuclement.nextbus.backend.model.id.StopTimeId;
 
-import javax.persistence.Entity;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
 @IdClass(StopTimeId.class)
 public class StopTime implements Comparable<StopTime> {
+
+    @Id
+    @JoinColumn(name = "TRIP_ID")
+    @ManyToOne
     private Trip trip;
+
+    @Id
+    @Column(name = "DEPARTURE_DATETIME")
     private Instant departureDateTime;
+
+    @Id
+    @JoinColumn(name = "STOP_ID")
+    @ManyToOne
     private Stop stop;
+
     private int stopSequence;
 
     protected StopTime() {}
