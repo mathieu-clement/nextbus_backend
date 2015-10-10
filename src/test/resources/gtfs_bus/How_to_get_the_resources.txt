@@ -1,0 +1,1 @@
+Download the ZIP for the Busses from http://gtfs.geops.ch/ and extract the text files here.
