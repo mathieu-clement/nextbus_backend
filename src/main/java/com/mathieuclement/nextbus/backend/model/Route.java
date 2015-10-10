@@ -1,5 +1,7 @@
 package com.mathieuclement.nextbus.backend.model;
 
+import org.springframework.util.Assert;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,18 +14,20 @@ public class Route implements Comparable<Route> {
     @ManyToOne
     private Agency agency;
 
-    @Column(name = "SHORT_NAME")
     private String shortName;
 
-    @Column(name = "LONG_NAME")
     private String longName;
 
     @Column(name = "ROUTE_TYPE")
+    @Enumerated(EnumType.STRING)
     private RouteType type;
 
     protected Route() {}
 
     public Route(String id, Agency agency, String shortName, String longName, RouteType type) {
+        Assert.hasLength(id);
+        Assert.notNull(agency);
+        Assert.notNull(type);
         this.id = id;
         this.agency = agency;
         this.shortName = shortName;

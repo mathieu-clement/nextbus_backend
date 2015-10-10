@@ -1,5 +1,7 @@
 package com.mathieuclement.nextbus.backend.model;
 
+import org.springframework.util.Assert;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -19,6 +21,9 @@ public class Agency implements Comparable<Agency> {
     protected Agency() {}
 
     public Agency(Long id, String name, String timeZoneName) {
+        Assert.notNull(id);
+        Assert.hasLength(name);
+        Assert.hasLength(timeZoneName);
         this.id = id;
         this.name = name;
         this.timeZone = TimeZone.getTimeZone(timeZoneName);

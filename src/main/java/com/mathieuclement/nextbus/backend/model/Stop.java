@@ -1,6 +1,7 @@
 package com.mathieuclement.nextbus.backend.model;
 
-import javax.persistence.Column;
+import org.springframework.util.Assert;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -10,22 +11,21 @@ public class Stop implements Comparable<Stop> {
     @Id
     private String id;
 
-    @Column(name = "STOP_CODE")
     private String stopCode;
 
-    @Column(name = "STOP_NAME")
     private String stopName;
 
     private float latitude;
 
     private float longitude;
 
-    @Column(name = "PLATFORM_CODE")
     private String platformCode; // not present in GTFS reference
 
     protected Stop () {}
 
     public Stop(String id, String stopCode, String stopName, float latitude, float longitude, String platformCode) {
+        Assert.hasLength(id);
+        Assert.hasLength(stopCode);
         this.id = id;
         this.stopCode = stopCode;
         this.stopName = stopName;

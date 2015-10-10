@@ -1,23 +1,23 @@
 package com.mathieuclement.nextbus.backend.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Trip implements Comparable<Trip> {
     @Id
     private String id;
 
-    @Column(name = "SERVICE_ID")
     private String serviceId;
 
     @JoinColumn(name = "ROUTE_ID")
     @ManyToOne
     private Route route;
 
-    @Column(name = "HEAD_SIGN")
     private String headSign;
 
-    @Column(name = "SHORT_NAME")
     private String shortName;
 
     protected Trip() {}
