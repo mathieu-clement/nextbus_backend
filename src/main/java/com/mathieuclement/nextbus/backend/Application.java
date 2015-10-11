@@ -2,19 +2,17 @@ package com.mathieuclement.nextbus.backend;
 
 import com.mathieuclement.nextbus.backend.db.repository.CalendarDateRepository;
 import com.mathieuclement.nextbus.backend.db.repository.TripRepository;
-import com.mathieuclement.nextbus.backend.gtfs.GtfsParser;
+import org.postgresql.Driver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -23,8 +21,9 @@ import java.net.URISyntaxException;
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
+@EnableJpaRepositories("com.mathieuclement.nextbus.backend.db.repository")
 //@PropertySource("")
-public class Application implements ResourceLoaderAware {
+public class Application {
 
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
@@ -38,6 +37,9 @@ public class Application implements ResourceLoaderAware {
             throws IOException, URISyntaxException {
 
         return args -> {
+
+            Driver.setLogLevel(2);
+
             /*
             LOG.info("Parsing agencies");
             GtfsParser.writeAgencies(getFile(AGENCY_FILENAME), getPrintWriterForFile("agency.csv"));
@@ -53,12 +55,11 @@ public class Application implements ResourceLoaderAware {
 
             LOG.info("Parsing trips");
             GtfsParser.writeTrips(getFile(TRIPS_FILENAME), getPrintWriterForFile("trip.csv"));
-            */
-
 
             LOG.info("Parsing stop times");
             GtfsParser.writeStopTimes(new File("/home/mathieu/gtfs_bus/stop_times.txt"), tripRepository, calendarDateRepository,
                     getPrintWriterForFile("stop_time.csv"));
+            */
         };
     }
 
@@ -77,15 +78,4 @@ public class Application implements ResourceLoaderAware {
     private static final String STOPS_FILENAME = "stops.txt";
     private static final String CALENDAR_DATES_FILENAME = "calendar_dates.txt";
     private static final String STOP_TIMES_FILENAME = "stop_times.txt";
-
-    private ResourceLoader resourceLoader;
-
-    @Override
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
-
-    public Resource getResource(String location) {
-        return resourceLoader.getResource(location);
-    }
 }

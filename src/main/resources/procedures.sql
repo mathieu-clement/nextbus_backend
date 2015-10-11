@@ -1,12 +1,11 @@
 -- all distances in meters
 -- latitude and longitude in degrees as usual
 
-CREATE OR REPLACE FUNCTION CLOSEST_STOPS(userLat REAL, userLon REAL, maxDist INTEGER) -- distance in meters
+CREATE OR REPLACE FUNCTION CLOSEST_STOPS(userLat FLOAT8, userLon FLOAT8, maxDist INTEGER) -- distance in meters
   RETURNS TABLE(id VARCHAR(255), stop_code VARCHAR(255), stop_name VARCHAR(255),
-  latitude REAL, longitude REAL, platform_code VARCHAR(255), distance REAL) AS $$
+  latitude REAL, longitude REAL, platform_code VARCHAR(255), distance INT) AS $$
 DECLARE
   earthRadius   REAL := 6371000;
-  maxDistReal   REAL;
   userLatRad    REAL;
   cosUserLatRad REAL;
   userLonRad    REAL;
@@ -16,7 +15,6 @@ DECLARE
   maxLat        REAL;
   maxLon        REAL;
 BEGIN
-  maxDistReal := CAST(maxDist AS REAL);
   userLonRad := radians(userLon);
   userLatRad := radians(userLat);
   cosUserLatRad := cos(userLatRad);
@@ -29,12 +27,12 @@ BEGIN
 
   RETURN QUERY
   SELECT
-    s.id,
-    s.stop_code,
-    s.stop_name,
-    s.latitude,
-    s.longitude,
-    s.platform_code,
+    s.id AS id,
+    s.stop_code AS stop_code,
+    s.stop_name AS stop_name,
+    s.latitude AS latitude,
+    s.longitude AS longitude,
+    s.platform_code AS platform_code,
     -- Haversine formula
     CAST((earthRadius * 2 * atan2(sqrt(sin(radians(s.latitude - userLat) / 2) * sin(radians(s.latitude - userLat) / 2) +
                                        cosUserLatRad * cos(radians(s.latitude)) *
@@ -42,7 +40,7 @@ BEGIN
                                        sin(radians(s.longitude - userLon) / 2)), sqrt(1 - (
       sin(radians(s.latitude - userLat) / 2) * sin(radians(s.latitude - userLat) / 2) +
       cosUserLatRad * cos(radians(s.latitude)) * sin(radians(s.longitude - userLon) / 2) *
-      sin(radians(s.longitude - userLon) / 2))))) AS REAL)
+      sin(radians(s.longitude - userLon) / 2))))) AS INT)
       AS distance
   FROM stop s
   WHERE s.latitude > minLat AND s.latitude < maxLat
@@ -54,8 +52,8 @@ BEGIN
                                                sin(radians(s.longitude - userLon) / 2)), sqrt(1 - (
     sin(radians(s.latitude - userLat) / 2) * sin(radians(s.latitude - userLat) / 2) +
     cosUserLatRad * cos(radians(s.latitude)) * sin(radians(s.longitude - userLon) / 2) *
-    sin(radians(s.longitude - userLon) / 2))))) AS REAL)
-            < maxDistReal
+    sin(radians(s.longitude - userLon) / 2))))) AS INT)
+            < maxDist
 
   ORDER BY distance;
 

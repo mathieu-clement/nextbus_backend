@@ -11,9 +11,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/connections")
 public class ConnectionController {
 
-    @RequestMapping(value = "/nextConnections", method = RequestMethod.GET)
+    @RequestMapping(value = "/next", method = RequestMethod.GET)
     public List<Connection> getNextConnections(
             @RequestParam(value = "latitude") float latitude,
             @RequestParam(value = "longitude") float longitude) {

@@ -10,20 +10,20 @@ import javax.persistence.Id;
 public class Stop implements Comparable<Stop> {
 
     @Id
-    private String id;
+    protected String id;
 
     @Column(name = "STOP_CODE")
-    private String stopCode;
+    protected String stopCode;
 
     @Column(name = "STOP_NAME")
-    private String stopName;
+    protected String stopName;
 
-    private float latitude;
+    protected float latitude;
 
-    private float longitude;
+    protected float longitude;
 
     @Column(name = "PLATFORM_CODE")
-    private String platformCode; // not present in GTFS reference
+    protected String platformCode; // not present in GTFS reference
 
     protected Stop () {}
 
