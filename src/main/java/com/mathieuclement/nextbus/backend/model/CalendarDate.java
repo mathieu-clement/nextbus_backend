@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 @Entity
 @IdClass(CalendarDateId.class)
+@Table(name = "CALENDAR_DATE")
 public class CalendarDate implements Comparable<CalendarDate> {
 
     @Id
@@ -16,8 +17,8 @@ public class CalendarDate implements Comparable<CalendarDate> {
     private String serviceId;
 
     @Id
+    @Convert(converter = LocalDateConverter.class, attributeName = "LOCAL_DATE")
     @Column(name = "LOCAL_DATE")
-    @Convert(converter = LocalDateConverter.class)
     private LocalDate date;
 
     protected CalendarDate() {

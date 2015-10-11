@@ -36,7 +36,7 @@ targetCompatibility = 1.8
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-    compile 'postgresql:postgresql:9.1-901-1.jdbc4'
+    compile 'postgresql:postgresql:9.1-901-1.jdbc42'
     compile 'org.apache.commons:commons-csv:1.2'
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.springframework:spring-test'

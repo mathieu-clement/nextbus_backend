@@ -10,14 +10,14 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
 @EnableJpaRepositories
 @EnableTransactionManagement
-public class Config {
+public class Config implements TransactionManagementConfigurer {
 
     @Bean
     public DataSource dataSource() {
@@ -26,11 +26,12 @@ public class Config {
         dataSource.setDatabaseName("nextbus_dev");
         dataSource.setUser("nextbus");
         dataSource.setPassword("nextbus");
+        dataSource.setLogLevel(2);
         return dataSource;
     }
 
     @Bean
-    public EntityManagerFactory entityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         //vendorAdapter.setGenerateDdl(true); // executes schema.sql anyway...
 
@@ -40,14 +41,18 @@ public class Config {
         factory.setDataSource(dataSource());
         factory.afterPropertiesSet();
 
-        return factory.getObject();
+        return factory;
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+    public PlatformTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean mfb) {
         JpaTransactionManager txManager = new JpaTransactionManager();
-        txManager.setEntityManagerFactory(emf);
+        txManager.setEntityManagerFactory(mfb.getObject());
         return txManager;
     }
 
+    @Override
+    public PlatformTransactionManager annotationDrivenTransactionManager() {
+        return transactionManager(entityManagerFactory());
+    }
 }

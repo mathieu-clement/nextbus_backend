@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 public class LocalDateConverter implements AttributeConverter<LocalDate, String> {
     @Override
     public String convertToDatabaseColumn(LocalDate attribute) {
-        return attribute.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        return new String(attribute.format(DateTimeFormatter.ISO_LOCAL_DATE));
     }
 
     @Override
