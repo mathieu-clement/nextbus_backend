@@ -25,7 +25,8 @@ public class StopController {
             @RequestParam(value = "longitude") float longitude,
             @RequestParam(value = "maxDist") int maxDist // meters
     ) {
-        Assert.isTrue(maxResults < 51, "Can't request more than 50 results.");
+        Assert.isTrue(maxResults < 51, "Number of results is too large.");
+        Assert.isTrue(maxDist < 10_001, "Distance is too large.");
         List<StopWithDistance> closestStopsByDistance = stopWithDistanceRepository.findStopsByDistance(latitude, longitude, maxDist, maxResults);
         return closestStopsByDistance;
     }

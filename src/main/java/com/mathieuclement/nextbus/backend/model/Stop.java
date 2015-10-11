@@ -1,5 +1,6 @@
 package com.mathieuclement.nextbus.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.Assert;
 
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ public class Stop implements Comparable<Stop> {
     protected String id;
 
     @Column(name = "STOP_CODE")
+    @JsonIgnore
     protected String stopCode;
 
     @Column(name = "STOP_NAME")

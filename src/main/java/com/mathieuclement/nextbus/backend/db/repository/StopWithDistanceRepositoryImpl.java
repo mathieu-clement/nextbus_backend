@@ -23,8 +23,11 @@ public class StopWithDistanceRepositoryImpl implements StopWithDistanceRepositor
         query.setParameter("latitude", latitude);
         query.setParameter("longitude", longitude);
         query.setParameter("maxDistance", maxDistance);
-        query.setMaxResults(maxNbResults);
+        //query.setMaxResults(maxNbResults);
         List<StopWithDistance> results = query.getResultList();
+        if (results != null && !results.isEmpty()) {
+            results = results.subList(0, maxNbResults + 1);
+        }
         return results;
     }
 }
