@@ -1,8 +1,8 @@
 package com.mathieuclement.nextbus.backend;
 
-import com.mathieuclement.nextbus.backend.db.repository.*;
+import com.mathieuclement.nextbus.backend.db.repository.CalendarDateRepository;
+import com.mathieuclement.nextbus.backend.db.repository.TripRepository;
 import com.mathieuclement.nextbus.backend.gtfs.GtfsParser;
-import com.mathieuclement.nextbus.backend.model.CalendarDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -12,22 +12,14 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 
 @SpringBootApplication
 public class Application implements ResourceLoaderAware {
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
@@ -36,56 +28,41 @@ public class Application implements ResourceLoaderAware {
     }
 
     @Bean
-    @Transactional
-    public CommandLineRunner populateDb(AgencyRepository agencyRepository,
-                                        CalendarDateRepository calendarDateRepository,
-                                        RouteRepository routeRepository,
-                                        StopRepository stopRepository,
-                                        StopTimeRepository stopTimeRepository,
-                                        TripRepository tripRepository) throws IOException, URISyntaxException {
-
-        if (agencyRepository.count() == 0) {
-            LOG.info("Importing agencies");
-            agencyRepository.save(GtfsParser.toAgencies(getFile(AGENCY_FILENAME)));
-            LOG.info("Imported agencies");
-        }
-
-        if (calendarDateRepository.count() == 0) {
-            LOG.info("Importing calendar dates");
-            Collection<CalendarDate> calendarDates = GtfsParser.toCalendarDates(getFile(CALENDAR_DATES_FILENAME));
-            for (CalendarDate calendarDate : calendarDates) {
-                entityManager.persist(calendarDate);
-            }
-            LOG.info("Imported calendar dates");
-        }
-
-        if (routeRepository.count() == 0) {
-            LOG.info("Importing routes");
-            routeRepository.save(GtfsParser.toRoutes(getFile(ROUTES_FILENAME), agencyRepository));
-            LOG.info("Imported routes");
-        }
-
-        if (stopRepository.count() == 0) {
-            LOG.info("Importing stops");
-            stopRepository.save(GtfsParser.toStops(getFile(STOPS_FILENAME)));
-            LOG.info("Imported stops");
-        }
-
-        if (tripRepository.count() == 0) {
-            LOG.info("Importing trips");
-            tripRepository.save(GtfsParser.toTrips(getFile(TRIPS_FILENAME), routeRepository));
-            LOG.info("Imported trips");
-        }
-
-        if (stopTimeRepository.count() == 0) {
-            LOG.info("Importing stop times");
-            stopTimeRepository.save(GtfsParser.toStopTimes(getFile(STOP_TIMES_FILENAME),
-                    tripRepository, stopRepository, calendarDateRepository));
-            LOG.info("Imported stop times");
-        }
+    public CommandLineRunner populateDb(CalendarDateRepository calendarDateRepository,
+                                        TripRepository tripRepository)
+            throws IOException, URISyntaxException {
 
         return args -> {
+            LOG.info("Parsing agencies");
+            GtfsParser.writeAgencies(getFile(AGENCY_FILENAME), getPrintWriterForFile("agency.sql"));
+
+            LOG.info("Parsing calendar dates");
+            GtfsParser.writeCalendarDates(getFile(CALENDAR_DATES_FILENAME), getPrintWriterForFile("calendar_date.sql"));
+
+            LOG.info("Parsing routes");
+            GtfsParser.writeRoutes(getFile(ROUTES_FILENAME), getPrintWriterForFile("route.sql"));
+
+            LOG.info("Parsing stops");
+            GtfsParser.writeStops(getFile(STOPS_FILENAME), getPrintWriterForFile("stop.sql"));
+
+            LOG.info("Parsing trips");
+            GtfsParser.writeTrips(getFile(TRIPS_FILENAME), getPrintWriterForFile("trip.sql"));
+
+            /*
+            LOG.info("Parsing stop times");
+            GtfsParser.writeStopTimes(getFile(STOP_TIMES_FILENAME), tripRepository, calendarDateRepository,
+                    getPrintWriterForFile("stop_time.sql"));
+                    */
         };
+    }
+
+    private PrintWriter getPrintWriterForFile(String filename) throws IOException {
+        File file = new File("C:\\Users\\macl\\Documents\\SQL\\" + filename);
+        if (file.exists()) {
+            file.delete();
+        }
+        file.createNewFile();
+        return new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8")), true);
     }
 
     private static final String AGENCY_FILENAME = "agency.txt";

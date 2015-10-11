@@ -10,14 +10,13 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
 import javax.sql.DataSource;
 
 @Configuration
 @EnableJpaRepositories
 @EnableTransactionManagement
-public class Config implements TransactionManagementConfigurer {
+public class Config {
 
     @Bean
     public DataSource dataSource() {
@@ -49,10 +48,5 @@ public class Config implements TransactionManagementConfigurer {
         JpaTransactionManager txManager = new JpaTransactionManager();
         txManager.setEntityManagerFactory(mfb.getObject());
         return txManager;
-    }
-
-    @Override
-    public PlatformTransactionManager annotationDrivenTransactionManager() {
-        return transactionManager(entityManagerFactory());
     }
 }
