@@ -7,18 +7,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @SpringBootApplication
+@Configuration
+@EnableAutoConfiguration
+@ComponentScan
+//@PropertySource("")
 public class Application implements ResourceLoaderAware {
 
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
@@ -33,31 +38,32 @@ public class Application implements ResourceLoaderAware {
             throws IOException, URISyntaxException {
 
         return args -> {
+            /*
             LOG.info("Parsing agencies");
-            GtfsParser.writeAgencies(getFile(AGENCY_FILENAME), getPrintWriterForFile("agency.sql"));
+            GtfsParser.writeAgencies(getFile(AGENCY_FILENAME), getPrintWriterForFile("agency.csv"));
 
             LOG.info("Parsing calendar dates");
-            GtfsParser.writeCalendarDates(getFile(CALENDAR_DATES_FILENAME), getPrintWriterForFile("calendar_date.sql"));
+            GtfsParser.writeCalendarDates(getFile(CALENDAR_DATES_FILENAME), getPrintWriterForFile("calendar_date.csv"));
 
             LOG.info("Parsing routes");
-            GtfsParser.writeRoutes(getFile(ROUTES_FILENAME), getPrintWriterForFile("route.sql"));
+            GtfsParser.writeRoutes(getFile(ROUTES_FILENAME), getPrintWriterForFile("route.csv"));
 
             LOG.info("Parsing stops");
-            GtfsParser.writeStops(getFile(STOPS_FILENAME), getPrintWriterForFile("stop.sql"));
+            GtfsParser.writeStops(getFile(STOPS_FILENAME), getPrintWriterForFile("stop.csv"));
 
             LOG.info("Parsing trips");
-            GtfsParser.writeTrips(getFile(TRIPS_FILENAME), getPrintWriterForFile("trip.sql"));
+            GtfsParser.writeTrips(getFile(TRIPS_FILENAME), getPrintWriterForFile("trip.csv"));
+            */
 
-            /*
+
             LOG.info("Parsing stop times");
-            GtfsParser.writeStopTimes(getFile(STOP_TIMES_FILENAME), tripRepository, calendarDateRepository,
-                    getPrintWriterForFile("stop_time.sql"));
-                    */
+            GtfsParser.writeStopTimes(new File("/home/mathieu/gtfs_bus/stop_times.txt"), tripRepository, calendarDateRepository,
+                    getPrintWriterForFile("stop_time.csv"));
         };
     }
 
     private PrintWriter getPrintWriterForFile(String filename) throws IOException {
-        File file = new File("C:\\Users\\macl\\Documents\\SQL\\" + filename);
+        File file = new File("/home/mathieu/CSV/" + filename);
         if (file.exists()) {
             file.delete();
         }
@@ -73,12 +79,6 @@ public class Application implements ResourceLoaderAware {
     private static final String STOP_TIMES_FILENAME = "stop_times.txt";
 
     private ResourceLoader resourceLoader;
-
-    private File getFile(String filename) throws URISyntaxException, IOException {
-        Resource resource = getResource("classpath:/gtfs_bus/" + filename);
-        Path resourcePath = Paths.get(resource.getURI());
-        return resourcePath.toFile();
-    }
 
     @Override
     public void setResourceLoader(ResourceLoader resourceLoader) {

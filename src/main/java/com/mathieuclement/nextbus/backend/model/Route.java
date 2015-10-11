@@ -10,12 +10,14 @@ public class Route implements Comparable<Route> {
     @Id
     private String id;
 
-    @JoinColumn(name = "PK_AGENCY_ID")
+    @JoinColumn(name = "AGENCY_ID")
     @ManyToOne
     private Agency agency;
 
+    @Column(name = "SHORT_NAME")
     private String shortName;
 
+    @Column(name = "LONG_NAME")
     private String longName;
 
     @Column(name = "ROUTE_TYPE")

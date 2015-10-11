@@ -1,11 +1,11 @@
 package com.mathieuclement.nextbus.backend.model.id;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 
 public class CalendarDateId implements Serializable {
     private String serviceId;
-    private LocalDate date;
+
+    private String dateStr;
 
     public String getServiceId() {
         return serviceId;
@@ -13,14 +13,6 @@ public class CalendarDateId implements Serializable {
 
     public void setServiceId(String serviceId) {
         this.serviceId = serviceId;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
     }
 
     @Override
@@ -31,14 +23,14 @@ public class CalendarDateId implements Serializable {
         CalendarDateId that = (CalendarDateId) o;
 
         if (serviceId != null ? !serviceId.equals(that.serviceId) : that.serviceId != null) return false;
-        return !(date != null ? !date.equals(that.date) : that.date != null);
+        return !(dateStr != null ? !dateStr.equals(that.dateStr) : that.dateStr != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = serviceId != null ? serviceId.hashCode() : 0;
-        result = 31 * result + (date != null ? date.hashCode() : 0);
+        result = 31 * result + (dateStr != null ? dateStr.hashCode() : 0);
         return result;
     }
 }

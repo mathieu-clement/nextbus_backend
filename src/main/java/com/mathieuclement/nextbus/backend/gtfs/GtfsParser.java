@@ -6,10 +6,7 @@ import com.mathieuclement.nextbus.backend.model.CalendarDate;
 import com.mathieuclement.nextbus.backend.model.RouteType;
 import com.mathieuclement.nextbus.backend.model.Trip;
 import com.mathieuclement.nextbus.backend.model.converter.LocalDateConverter;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.csv.QuoteMode;
+import org.apache.commons.csv.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -32,123 +29,89 @@ public class GtfsParser {
      */
     private static final Charset CHARSET = Charset.forName("UTF-8");
 
-    /**
-     * Format of all (CSV) files
-     */
-    private static final CSVFormat CSV_FORMAT = CSVFormat
+    private static final CSVFormat INPUT_CSV_FORMAT = CSVFormat
             .DEFAULT
             .withQuoteMode(QuoteMode.NON_NUMERIC)
             .withHeader();
 
-    public static void writeAgencies(File agenciesFile, PrintWriter writer) throws IOException {
-        try (CSVParser records = CSVParser.parse(agenciesFile, CHARSET, CSV_FORMAT)) {
-            for (CSVRecord record : records) {
-                String idStr = record.get("agency_id");
-                String name = record.get("agency_name");
-                String timeZoneName = record.get("agency_timezone");
+    private static final CSVFormat OUTPUT_CSV_FORMAT = CSVFormat
+            .DEFAULT
+            .withQuoteMode(QuoteMode.ALL);
 
-                writer.append("INSERT INTO AGENCY (ID, NAME, TIMEZONE_NAME) VALUES (")
-                        .append(idStr)
-                        .append(", '").append(escapeSql(name))
-                        .append("', '").append(escapeSql(timeZoneName))
-                        .append("');")
-                        .println();
+    public static void writeAgencies(File agenciesFile, PrintWriter writer) throws IOException {
+        CSVPrinter csvPriter = new CSVPrinter(writer, OUTPUT_CSV_FORMAT);
+        try (CSVParser records = CSVParser.parse(agenciesFile, CHARSET, INPUT_CSV_FORMAT)) {
+            for (CSVRecord record : records) {
+                csvPriter.printRecord(record.get("agency_id"), record.get("agency_name"), record.get("agency_timezone"));
             }
+
         }
-        writer.close();
+        csvPriter.close();
     }
 
     public static void writeCalendarDates(File calendarDatesFile, PrintWriter writer) throws IOException {
-        try (CSVParser records = CSVParser.parse(calendarDatesFile, CHARSET, CSV_FORMAT)) {
+        CSVPrinter csvPriter = new CSVPrinter(writer, OUTPUT_CSV_FORMAT);
+        try (CSVParser records = CSVParser.parse(calendarDatesFile, CHARSET, INPUT_CSV_FORMAT)) {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
             LocalDateConverter localDateConverter = new LocalDateConverter();
             for (CSVRecord record : records) {
-                String serviceId = record.get("service_id");
-                String date = record.get("date");
-
-                writer.append("INSERT INTO CALENDAR_DATE (SERVICE_ID, LOCAL_DATE) VALUES ('")
-                        .append(escapeSql(serviceId))
-                        .append("', '")
-                        .append(escapeSql(localDateConverter.convertToDatabaseColumn(LocalDate.parse(date, dateFormatter))))
-                        .append("');")
-                        .println();
+                csvPriter.printRecord(record.get("service_id"),
+                        localDateConverter.convertToDatabaseColumn(LocalDate.parse(record.get("date"), dateFormatter)));
             }
         }
-        writer.close();
+        csvPriter.close();
     }
 
     public static void writeRoutes(File routesFile, PrintWriter writer) throws IOException {
-        try (CSVParser records = CSVParser.parse(routesFile, CHARSET, CSV_FORMAT)) {
+        CSVPrinter csvPriter = new CSVPrinter(writer, OUTPUT_CSV_FORMAT);
+        try (CSVParser records = CSVParser.parse(routesFile, CHARSET, INPUT_CSV_FORMAT)) {
             for (CSVRecord record : records) {
-                String routeId = record.get("route_id");
-                String agencyId = record.get("agency_id");
-                String routeShortName = record.get("route_short_name");
-                String routeLongName = record.get("route_long_name");
-                int routeTypeOrd = Integer.parseInt(record.get("route_type"));
-                RouteType routeType = RouteType.values()[routeTypeOrd];
-
-                writer.append("INSERT INTO ROUTE (ID, AGENCY_ID, SHORT_NAME, LONG_NAME, ROUTE_TYPE) VALUES ('")
-                        .append(escapeSql(routeId))
-                        .append("', ").append(agencyId)
-                        .append(", '").append(escapeSql(routeShortName))
-                        .append(", '").append(escapeSql(routeLongName))
-                        .append(", '").append(routeType.name())
-                        .append("');")
-                        .println();
+                csvPriter.printRecord(
+                        record.get("route_id"),
+                        record.get("agency_id"),
+                        record.get("route_short_name"),
+                        record.get("route_long_name"),
+                        RouteType.values()[Integer.parseInt(record.get("route_type"))].name());
             }
         }
-        writer.close();
+        csvPriter.close();
     }
 
     public static void writeStops(File stopsFile, PrintWriter writer) throws IOException {
-        try (CSVParser records = CSVParser.parse(stopsFile, CHARSET, CSV_FORMAT)) {
+        CSVPrinter csvPriter = new CSVPrinter(writer, OUTPUT_CSV_FORMAT);
+        try (CSVParser records = CSVParser.parse(stopsFile, CHARSET, INPUT_CSV_FORMAT)) {
             for (CSVRecord record : records) {
-                String stopId = record.get("stop_id");
-                String stopCode = record.get("stop_code");
-                String stopName = record.get("stop_name");
-                String latitude = record.get("stop_lat");
-                String longitude = record.get("stop_lon");
-                String platformCode = record.get("platform_code");
-
-                writer.append("INSERT INTO STOP (ID, STOP_CODE, STOP_NAME, LATITUDE, LONGITUDE, PLATFORM_CODE) VALUES ('")
-                        .append(escapeSql(stopId))
-                        .append("', '").append(escapeSql(stopCode))
-                        .append("', '").append(escapeSql(stopName))
-                        .append("', ").append(latitude)
-                        .append(", ").append(longitude)
-                        .append(", '").append(escapeSql(platformCode))
-                        .append("');")
-                        .println();
+                csvPriter.printRecord(record.get("stop_id"),
+                        record.get("stop_code"),
+                        record.get("stop_name"),
+                        record.get("stop_lat"),
+                        record.get("stop_lon"),
+                        record.get("platform_code"));
             }
         }
+        csvPriter.close();
     }
 
     public static void writeTrips(File tripsFile, PrintWriter writer) throws IOException {
-        try (CSVParser records = CSVParser.parse(tripsFile, CHARSET, CSV_FORMAT)) {
+        CSVPrinter csvPriter = new CSVPrinter(writer, OUTPUT_CSV_FORMAT);
+        try (CSVParser records = CSVParser.parse(tripsFile, CHARSET, INPUT_CSV_FORMAT)) {
             for (CSVRecord record : records) {
-                String routeId = record.get("route_id");
-                String serviceId = record.get("service_id");
-                String tripId = record.get("trip_id");
-                String tripHeadSign = record.get("trip_headsign");
-                String tripShortName = record.get("trip_short_name");
-
-                writer.append("INSERT INTO TRIP (ID, SERVICE_ID, ROUTE_ID, HEAD_SIGN, SHORT_NAME) VALUES ('")
-                        .append(escapeSql(tripId))
-                        .append("', '").append(escapeSql(serviceId))
-                        .append("', '").append(escapeSql(routeId))
-                        .append("', '").append(escapeSql(tripHeadSign))
-                        .append("', '").append(escapeSql(tripShortName))
-                        .append("');")
-                        .println();
+                csvPriter.printRecord(record.get("trip_id"),
+                        record.get("service_id"),
+                        record.get("route_id"),
+                        record.get("trip_headsign"),
+                        record.get("trip_short_name"));
             }
         }
+        csvPriter.close();
     }
 
-    public static void writeStopTimes(File stopTimesFile,
+    public static void writeStopTimes(File file,
                                       TripRepository tripRepository,
                                       CalendarDateRepository calendarDateRepository,
                                       PrintWriter writer) throws IOException {
-        try (CSVParser records = CSVParser.parse(stopTimesFile, CHARSET, CSV_FORMAT)) {
+        CSVPrinter csvPriter = new CSVPrinter(writer, OUTPUT_CSV_FORMAT);
+        try (CSVParser records = CSVParser.parse(file, CHARSET, INPUT_CSV_FORMAT)) {
             for (CSVRecord record : records) {
                 String tripId = record.get("trip_id");
                 Trip trip = tripRepository.findOne(tripId);
@@ -167,17 +130,15 @@ public class GtfsParser {
 
                 if (calendarDates != null) {
                     for (CalendarDate calendarDate : calendarDates) {
-                        writer.append("INSERT INTO STOP_TIME (TRIP_ID, DEPARTURE_DATETIME, STOP_ID, STOP_SEQUENCE) VALUES ('")
-                                .append(escapeSql(tripId))
-                                .append("', '").append(gtfsDate.toInstant(calendarDate.getDate(), zoneId).toString())
-                                .append("', '").append(escapeSql(stopId))
-                                .append("', ").append(stopSequence)
-                                .append(");")
-                                .println();
+                        csvPriter.printRecord(tripId,
+                                gtfsDate.toInstant(calendarDate.getLocalDate(), zoneId).toString(),
+                                stopId,
+                                stopSequence);
                     }
                 }
             }
         }
+        csvPriter.close();
     }
 
     private static String escapeSql(String sql) {

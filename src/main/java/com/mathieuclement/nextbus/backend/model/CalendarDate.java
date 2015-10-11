@@ -1,41 +1,53 @@
 package com.mathieuclement.nextbus.backend.model;
 
-import com.mathieuclement.nextbus.backend.model.converter.LocalDateConverter;
 import com.mathieuclement.nextbus.backend.model.id.CalendarDateId;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
 @IdClass(CalendarDateId.class)
 @Table(name = "CALENDAR_DATE")
-public class CalendarDate implements Comparable<CalendarDate> {
+public class CalendarDate implements Comparable<CalendarDate>, Serializable {
+
+    private static final long serialVersionUID = 2530656976449163911L;
 
     @Id
     @Column(name = "SERVICE_ID")
     private String serviceId;
 
     @Id
-    @Convert(converter = LocalDateConverter.class, attributeName = "LOCAL_DATE")
     @Column(name = "LOCAL_DATE")
-    private LocalDate date;
+    private String dateStr; // ISO yyyy-MM-dd
+
+    @Transient
+    private LocalDate localDate;
 
     protected CalendarDate() {
     }
 
-    public CalendarDate(String serviceId, LocalDate date) {
+    public CalendarDate(String serviceId, LocalDate localDate) {
         Assert.hasLength(serviceId);
-        Assert.notNull(date);
+        Assert.notNull(localDate);
         this.serviceId = serviceId;
-        this.date = date;
+        setLocalDate(localDate);
+    }
+
+    public CalendarDate(String serviceId, String dateStr) {
+        Assert.hasLength(serviceId);
+        Assert.notNull(localDate);
+        this.serviceId = serviceId;
+        setDateStr(dateStr);
     }
 
     @Override
     public String toString() {
         return "CalendarDate{" +
                 "serviceId='" + serviceId + '\'' +
-                ", date=" + date +
+                ", dateStr='" + dateStr + '\'' +
+                ", localDate=" + localDate +
                 '}';
     }
 
@@ -47,20 +59,20 @@ public class CalendarDate implements Comparable<CalendarDate> {
         CalendarDate that = (CalendarDate) o;
 
         if (serviceId != null ? !serviceId.equals(that.serviceId) : that.serviceId != null) return false;
-        return !(date != null ? !date.equals(that.date) : that.date != null);
+        return !(dateStr != null ? !dateStr.equals(that.dateStr) : that.dateStr != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = serviceId != null ? serviceId.hashCode() : 0;
-        result = 31 * result + (date != null ? date.hashCode() : 0);
+        result = 31 * result + (dateStr != null ? dateStr.hashCode() : 0);
         return result;
     }
 
     @Override
     public int compareTo(CalendarDate o) {
-        int compareDates = date.compareTo(o.date);
+        int compareDates = localDate.compareTo(o.localDate);
         if (compareDates != 0) return compareDates;
 
         return serviceId.compareTo(serviceId);
@@ -74,11 +86,27 @@ public class CalendarDate implements Comparable<CalendarDate> {
         this.serviceId = serviceId;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public String getDateStr() {
+        if (dateStr == null && localDate != null) {
+            setLocalDate(localDate);
+        }
+        return dateStr;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setDateStr(String dateStr) {
+        this.dateStr = dateStr;
+        this.localDate = LocalDate.parse(dateStr);
+    }
+
+    public LocalDate getLocalDate() {
+        if (localDate == null && dateStr != null) {
+            setDateStr(dateStr);
+        }
+        return localDate;
+    }
+
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate = localDate;
+        this.dateStr = localDate.toString();
     }
 }
