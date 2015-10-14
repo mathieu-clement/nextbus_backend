@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS STOP_TIME (
 COMMIT TRANSACTION;
 
 -- Activate the constraints only AFTER populating the DB
--- Then remember to ANALYZE
+
+-- Set server config with big values for number of segments, maintenance memory and such
 
 -- Typical populate command:
 -- COPY AGENCY (ID, NAME, TIMEZONE_NAME) FROM '/home/mathieu/CSV/agency.csv' WITH CSV QUOTE AS '"';
@@ -57,6 +58,15 @@ COMMIT TRANSACTION;
 -- COPY STOP FROM '/home/mathieu/CSV/stop.csv' WITH CSV QUOTE AS '"';
 -- COPY TRIP FROM '/home/mathieu/CSV/trip.csv' WITH CSV QUOTE AS '"';
 
+-- FIXME: Combine both queries to avoid two full scans
+-- Remove obsolete records
+    -- DROP FROM stop_time WHERE departure_datetime < NOW()
+-- Remove duplicates not satisfying primary key constraint on stop_time
+    -- DELETE FROM stop_time a USING stop_time b
+    -- WHERE a.trip_id = b.trip_id
+    --   AND a.departure_datetime = b.departure_datetime
+    --   AND a.stop_id = b.stop_id
+    --   AND a.ctid < b.ctid; -- Select a winner
 
 BEGIN TRANSACTION;
 
@@ -66,12 +76,21 @@ ALTER TABLE ROUTE ADD CONSTRAINT route_pkey PRIMARY KEY (ID);
 ALTER TABLE ROUTE ADD CONSTRAINT route_agency_id_fkey FOREIGN KEY (agency_id) REFERENCES agency (id);
 
 ALTER TABLE STOP ADD CONSTRAINT stop_pkey PRIMARY KEY (ID);
+CREATE INDEX stop_lat_long_idx ON stop (latitude, longitude);
 
 ALTER TABLE TRIP ADD CONSTRAINT trip_pkey PRIMARY KEY (ID);
 ALTER TABLE TRIP ADD CONSTRAINT trip_route_id_fkey FOREIGN KEY (route_id) REFERENCES route (id);
 
-ALTER TABLE STOP_TIME ADD CONSTRAINT stop_time_pkey PRIMARY KEY (STOP_ID, TRIP_ID, DEPARTURE_DATETIME);
+-- ALTER TABLE STOP_TIME ADD CONSTRAINT stop_time_pkey PRIMARY KEY (STOP_ID, TRIP_ID, DEPARTURE_DATETIME);
+CREATE INDEX stop_time_stop_id_departure_time_idx ON stop_time (stop_id, departure_datetime);
 ALTER TABLE STOP_TIME ADD CONSTRAINT stop_time_trip_id_fkey FOREIGN KEY (trip_id) REFERENCES trip (id);
 ALTER TABLE STOP_TIME ADD CONSTRAINT stop_time_stop_id_fkey FOREIGN KEY (stop_id) REFERENCES stop (id);
+
+-- And then cluster stop_time according to its index
+-- CLUSTER stop_time USING stop_time_stop_id_departure_time_idx;
+-- It is also beneficial to cluster using stop_lat_long_idx.
+
+-- Then run ANALYZE on all tables (except maybe calendar_date, we won't need it anymore) or ANALYZE VERBOSE with
+-- no arguments to analyze the whole database. Or better yet, VACUUM ANALYZE.
 
 COMMIT TRANSACTION;
