@@ -79,3 +79,21 @@ BEGIN
 
 END; $$
 LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION NEXT_BUSES_ALL(stopId VARCHAR(255), maxTimestamp TIMESTAMP)
+  RETURNS TABLE(next_departure TIMESTAMP, trip_short_name VARCHAR(255), trip_head_sign VARCHAR(255)) AS $$
+BEGIN
+
+  RETURN QUERY
+  SELECT
+    s.departure_datetime AS departure_time,
+    t.short_name         AS trip_short_name,
+    t.head_sign          AS trip_head_sign
+  FROM stop_time s
+    JOIN trip t ON s.trip_id = t.id
+  WHERE stop_id = stopId
+        AND departure_datetime > NOW() AND departure_datetime < maxTimestamp
+  ORDER BY short_name, head_sign;
+
+END; $$
+LANGUAGE PLPGSQL;
