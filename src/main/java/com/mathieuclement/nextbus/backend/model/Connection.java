@@ -1,41 +1,120 @@
 package com.mathieuclement.nextbus.backend.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.mathieuclement.nextbus.backend.serializer.InstantToDateTimeSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.time.Instant;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
-public class Connection {
+@Entity
+@NamedStoredProcedureQuery(
+        name = Connection.FIND_NEXT_BUSES,
+        procedureName = "NEXT_BUSES",
+        parameters = {
+                @StoredProcedureParameter(name = "stopId", type = String.class),
+                @StoredProcedureParameter(name = "maxDatetime", type = Date.class),
+        },
+        resultClasses = {
+                Connection.class
+        }
+)
+public class Connection implements Serializable {
 
-    @JsonSerialize(using = InstantToDateTimeSerializer.class)
-    private Instant dateTime;
-    private Agency agency;
-    private Stop stop;
-    private Route route;
+    public static final String FIND_NEXT_BUSES = "Connection.FindNextBuses";
 
-    public Connection() {
+    @Id
+    @Column(name = "next_departure")
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonIgnore
+    private Date nextDepartureDate;
+
+    @Id
+    @Column(name = "trip_short_name")
+    private String tripShortName;
+
+    @Id
+    @Column(name = "trip_head_sign")
+    private String tripHeadSign;
+
+    @Column(name = "agency_timezone")
+    @JsonIgnore
+    private String agencyTimezoneId;
+
+    @Transient
+    private String departure;
+
+    protected Connection() {
     }
 
-    public Connection(Instant dateTime, Agency agency, Stop stop, Route route) {
-        this.dateTime = dateTime;
-        this.agency = agency;
-        this.stop = stop;
-        this.route = route;
+    @Override
+    public String toString() {
+        return "Connection{" +
+                "nextDepartureDate=" + nextDepartureDate +
+                ", tripShortName='" + tripShortName + '\'' +
+                ", tripHeadSign='" + tripHeadSign + '\'' +
+                '}';
     }
 
-    public Instant getDateTime() {
-        return dateTime;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Connection that = (Connection) o;
+
+        if (nextDepartureDate != null ? !nextDepartureDate.equals(that.nextDepartureDate) : that.nextDepartureDate != null)
+            return false;
+        if (tripShortName != null ? !tripShortName.equals(that.tripShortName) : that.tripShortName != null)
+            return false;
+        return !(tripHeadSign != null ? !tripHeadSign.equals(that.tripHeadSign) : that.tripHeadSign != null);
+
     }
 
-    public Agency getAgency() {
-        return agency;
+    @Override
+    public int hashCode() {
+        int result = nextDepartureDate != null ? nextDepartureDate.hashCode() : 0;
+        result = 31 * result + (tripShortName != null ? tripShortName.hashCode() : 0);
+        result = 31 * result + (tripHeadSign != null ? tripHeadSign.hashCode() : 0);
+        return result;
     }
 
-    public Stop getStop() {
-        return stop;
+    public Date getnextDepartureDate() {
+        return nextDepartureDate;
     }
 
-    public Route getRoute() {
-        return route;
+    public void setnextDepartureDate(Date nextDepartureDate) {
+        this.nextDepartureDate = nextDepartureDate;
+    }
+
+    public String getTripShortName() {
+        return tripShortName;
+    }
+
+    public void setTripShortName(String tripShortName) {
+        this.tripShortName = tripShortName;
+    }
+
+    public String getTripHeadSign() {
+        return tripHeadSign;
+    }
+
+    public void setTripHeadSign(String tripHeadSign) {
+        this.tripHeadSign = tripHeadSign;
+    }
+
+    public String getAgencyTimezoneId() {
+        return agencyTimezoneId;
+    }
+
+    public void setAgencyTimezoneId(String agencyTimezoneId) {
+        this.agencyTimezoneId = agencyTimezoneId;
+    }
+
+    public String getDeparture() {
+        return DateTimeFormatter.ISO_DATE_TIME
+                .withZone(ZoneId.of(agencyTimezoneId))
+                .format(nextDepartureDate.toInstant());
     }
 }

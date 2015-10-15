@@ -26,7 +26,7 @@ public class StopWithDistanceRepositoryImpl implements StopWithDistanceRepositor
         //query.setMaxResults(maxNbResults);
         List<StopWithDistance> results = query.getResultList();
         if (results != null && !results.isEmpty()) {
-            results = results.subList(0, maxNbResults + 1);
+            results = results.subList(0, Math.min(results.size() - 1, maxNbResults));
         }
         return results;
     }

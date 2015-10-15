@@ -1,3 +1,5 @@
+import com.sun.org.apache.xalan.internal.xsltc.cmdline.Compile
+
 group 'com.mathieuclement.nextbus'
 version '1.0-SNAPSHOT'
 
@@ -11,6 +13,11 @@ buildscript {
 }
 
 apply plugin: 'java'
+
+tasks.withType(Compile) {
+    options.encoding = 'UTF-8'
+}
+
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
@@ -20,6 +27,7 @@ jar {
 }
 
 repositories {
+    jcenter()
     mavenCentral()
     maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
 }
@@ -39,6 +47,8 @@ dependencies {
     compile 'org.springframework.hateoas:spring-hateoas'
     compile 'postgresql:postgresql:9.1-901-1.jdbc4'
     compile 'org.apache.commons:commons-csv:1.2'
+    compile 'io.springfox:springfox-swagger2:2.2.2'
+    compile 'io.springfox:springfox-swagger-ui:2.2.2'
     // compile 'org.springframework.boot:spring-boot-starter-actuator'
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.springframework:spring-test'

@@ -1,22 +1,15 @@
 package com.mathieuclement.nextbus.backend.gtfs;
 
 import com.mathieuclement.nextbus.backend.db.repository.*;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-import javax.persistence.PersistenceContext;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/*
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {PersistenceContext.class})
 @TestExecutionListeners({
@@ -25,6 +18,7 @@ import java.nio.file.Paths;
         TransactionalTestExecutionListener.class
         // DBUnit...
 })
+*/
 public class GtfsParserTest {
 
     public static final String AGENCY_FILENAME = "agency.txt";
@@ -81,7 +75,7 @@ public class GtfsParserTest {
         // Mockup agencies
         Map<Long, Agency> agencies = new HashMap<>(1);
         Agency agency97 = new Agency(97L,
-                "TRAVYS-y (Transports Vallée de Joux-Yverdon-Ste-Croix (ystec))",
+                "TRAVYS-y (Transports Vallee de Joux-Yverdon-Ste-Croix (ystec))", // TODO There should be an e acute in Vallee
                 "Europe/Berlin");
         agencies.put(97L, agency97);
 
@@ -106,7 +100,7 @@ public class GtfsParserTest {
     public void testToStopTimes() throws Exception {
         // Agency
         Agency agency97 = new Agency(97L,
-                "TRAVYS-y (Transports Vallée de Joux-Yverdon-Ste-Croix (ystec))",
+                "TRAVYS-y (Transports Vallee de Joux-Yverdon-Ste-Croix (ystec))", // TODO There should be an e acute in Vallee
                 "Europe/Berlin");
 
         // Route
