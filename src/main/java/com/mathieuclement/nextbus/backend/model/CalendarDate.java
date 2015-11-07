@@ -1,7 +1,8 @@
 package com.mathieuclement.nextbus.backend.model;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.mathieuclement.nextbus.backend.model.id.CalendarDateId;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -29,15 +30,15 @@ public class CalendarDate implements Comparable<CalendarDate>, Serializable {
     }
 
     public CalendarDate(String serviceId, LocalDate localDate) {
-        Assert.hasLength(serviceId);
-        Assert.notNull(localDate);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(serviceId));
+        Preconditions.checkArgument(localDate != null);
         this.serviceId = serviceId;
         setLocalDate(localDate);
     }
 
     public CalendarDate(String serviceId, String dateStr) {
-        Assert.hasLength(serviceId);
-        Assert.notNull(localDate);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(serviceId));
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(dateStr));
         this.serviceId = serviceId;
         setDateStr(dateStr);
     }
