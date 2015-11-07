@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 @Entity
@@ -113,8 +115,8 @@ public class Connection implements Serializable {
     }
 
     public String getDeparture() {
-        return DateTimeFormatter.ISO_DATE_TIME
-                .withZone(ZoneId.of(agencyTimezoneId))
-                .format(nextDepartureDate.toInstant());
+        ZoneId zoneId = ZoneId.of(agencyTimezoneId);
+        OffsetDateTime dbDateTime = ((Timestamp) nextDepartureDate).toLocalDateTime().atOffset(ZoneOffset.UTC);
+        return dbDateTime.atZoneSameInstant(zoneId).toString();
     }
 }
